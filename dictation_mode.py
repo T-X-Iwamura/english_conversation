@@ -47,7 +47,6 @@ def _create_and_run_evaluation() -> str:
     """
     評価用Chainを作成し、評価結果テキストを生成して返す
     """
-    print("\n\nuser_text:", st.session_state.chat_message)
     if not re.search(r"[A-Za-z]", st.session_state.chat_message):
         return ct.EVALUATION_NO_INPUT_MESSAGE
     

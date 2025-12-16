@@ -79,24 +79,31 @@ def play_wav(audio_output_file_path):
     引数:
         audio_output_file_path: 音声ファイルのパス
     """
-    # 音声ファイルの読み込み
-    _ = AudioSegment.from_wav(audio_output_file_path)
-    # PyAudioで再生
-    with wave.open(audio_output_file_path, 'rb') as play_target_file:
-        p = pyaudio.PyAudio()
-        stream = p.open(
-            format=p.get_format_from_width(play_target_file.getsampwidth()),
-            channels=play_target_file.getnchannels(),
-            rate=play_target_file.getframerate(),
-            output=True
-        )
-        data = play_target_file.readframes(ct.AUDIO_CHUNK_SIZE)
-        while data:
-            stream.write(data)
+    
+    try:
+        import streamlit as st
+        with open(audio_output_file_path, "rb") as f:
+            st.audio(f.read(), format="audio/wav")
+    except Exception:
+        print("Playing audio via PyAudio...")
+        # 音声ファイルの読み込み
+        _ = AudioSegment.from_wav(audio_output_file_path)
+        # PyAudioで再生
+        with wave.open(audio_output_file_path, 'rb') as play_target_file:
+            p = pyaudio.PyAudio()
+            stream = p.open(
+                format=p.get_format_from_width(play_target_file.getsampwidth()),
+                channels=play_target_file.getnchannels(),
+                rate=play_target_file.getframerate(),
+                output=True
+            )
             data = play_target_file.readframes(ct.AUDIO_CHUNK_SIZE)
-        stream.stop_stream()
-        stream.close()
-        p.terminate()
+            while data:
+                stream.write(data)
+                data = play_target_file.readframes(ct.AUDIO_CHUNK_SIZE)
+            stream.stop_stream()
+            stream.close()
+            p.terminate()
     # LLMからの回答の音声ファイルを削除
     os.remove(audio_output_file_path)
 
